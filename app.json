@@ -17,8 +17,17 @@
         "foregroundImage": "./assets/icon.png"
       }
     },
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/favicon.png"
+    },
+    "experiments": {
+      "baseUrl": "/app-for-books"
     },
     "plugins": [
       "expo-sharing"
