@@ -153,6 +153,41 @@ export const BookDetailScreen: React.FC<BookDetailScreenProps> = ({
 
           {/* Informações complementares */}
           <View style={styles.tagsContainer}>
+            {/* Status */}
+            <View style={[styles.infoPill, { backgroundColor: book.status === 'lido' ? '#E8F5E9' : book.status === 'lendo' ? '#FFF8E1' : '#F5F5F5' }]}>
+              <Ionicons
+                name={book.status === 'lido' ? 'checkmark-circle' : book.status === 'lendo' ? 'book' : 'bookmark'}
+                size={14}
+                color={book.status === 'lido' ? '#2E7D32' : book.status === 'lendo' ? '#F57F17' : Colors.badgeText}
+              />
+              <Text style={[styles.infoPillText, { color: book.status === 'lido' ? '#2E7D32' : book.status === 'lendo' ? '#F57F17' : Colors.badgeText }]}>
+                {book.status === 'lido' ? 'Terminado (Lido)' : book.status === 'lendo' ? 'Começado (Lendo)' : book.status === 'abandonado' ? 'Pausado' : 'Quero Ler'}
+              </Text>
+            </View>
+
+            {/* Onde fica */}
+            {book.location ? (
+              <View style={[styles.infoPill, { backgroundColor: '#EDE7F6' }]}>
+                <Ionicons name="location" size={14} color="#5E35B1" />
+                <Text style={[styles.infoPillText, { color: '#5E35B1' }]}>Local: {book.location}</Text>
+              </View>
+            ) : null}
+
+            {/* Datas */}
+            {book.startedAt ? (
+              <View style={styles.infoPill}>
+                <Ionicons name="play-outline" size={14} color={Colors.badgeText} />
+                <Text style={styles.infoPillText}>Início: {book.startedAt}</Text>
+              </View>
+            ) : null}
+
+            {book.completedAt ? (
+              <View style={styles.infoPill}>
+                <Ionicons name="checkmark-done-outline" size={14} color={Colors.badgeText} />
+                <Text style={styles.infoPillText}>Término: {book.completedAt}</Text>
+              </View>
+            ) : null}
+
             <View style={styles.infoPill}>
               <Ionicons
                 name={

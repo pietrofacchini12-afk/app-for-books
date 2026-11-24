@@ -43,6 +43,8 @@ export const LibraryShelfScreen: React.FC<LibraryShelfScreenProps> = ({
 
       if (!matchSearch) return false;
 
+      if (filterType === 'lendo') return book.status === 'lendo';
+      if (filterType === 'lido') return book.status === 'lido';
       if (filterType === 'favoritos') return book.isFavorite;
       if (filterType === 'fisico') return book.format === 'fisico';
       if (filterType === 'digital') return book.format === 'digital';
@@ -55,10 +57,12 @@ export const LibraryShelfScreen: React.FC<LibraryShelfScreenProps> = ({
 
   const filterChips = [
     { id: 'todos', label: 'Todos' },
+    { id: 'lendo', label: 'Começados 📖' },
+    { id: 'lido', label: 'Terminados ✅' },
     { id: 'favoritos', label: 'Favoritos ♥' },
-    { id: 'fisico', label: 'Físico 📖' },
-    { id: 'digital', label: 'E-book 📱' },
-    { id: 'audiolivro', label: 'Audiolivro 🎧' },
+    { id: 'fisico', label: 'Físico' },
+    { id: 'digital', label: 'E-book' },
+    { id: 'audiolivro', label: 'Audiolivro' },
     { id: '5estrelas', label: '5 Estrelas ★' },
   ];
 

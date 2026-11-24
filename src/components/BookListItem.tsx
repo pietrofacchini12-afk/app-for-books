@@ -96,6 +96,22 @@ export const BookListItem: React.FC<BookListItemProps> = ({
             <Text style={styles.formatText}>{badge.label}</Text>
           </View>
 
+          {/* Status Badge */}
+          <View style={[styles.statusBadge, { backgroundColor: book.status === 'lido' ? '#E8F5E9' : book.status === 'lendo' ? '#FFF8E1' : '#F5F5F5' }]}>
+            <Text style={[styles.statusText, { color: book.status === 'lido' ? '#2E7D32' : book.status === 'lendo' ? '#F57F17' : Colors.textSecondary }]}>
+              {book.status === 'lido' ? 'Terminado' : book.status === 'lendo' ? 'Começado' : book.status === 'abandonado' ? 'Pausado' : 'Quero ler'}
+            </Text>
+          </View>
+
+          {book.location ? (
+            <View style={[styles.statusBadge, { backgroundColor: '#EDE7F6' }]}>
+              <Ionicons name="location-outline" size={11} color="#5E35B1" style={{ marginRight: 2 }} />
+              <Text style={[styles.statusText, { color: '#5E35B1' }]} numberOfLines={1}>
+                {book.location}
+              </Text>
+            </View>
+          ) : null}
+
           {book.genre ? (
             <View style={styles.genreBadge}>
               <Text style={styles.genreText} numberOfLines={1}>
@@ -197,6 +213,17 @@ const styles = StyleSheet.create({
     marginTop: 6,
     flexWrap: 'wrap',
     gap: 6,
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: '600',
   },
   formatBadge: {
     flexDirection: 'row',

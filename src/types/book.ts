@@ -6,7 +6,7 @@ export type BookOpinion =
   | 'Não gostei'
   | 'Queria não ter lido';
 
-export type ReadingStatus = 'lido' | 'lendo' | 'quero_ler';
+export type ReadingStatus = 'quero_ler' | 'lendo' | 'lido' | 'abandonado';
 
 export interface BookCard {
   id: string;
@@ -26,7 +26,9 @@ export interface BookCard {
   isFavorite: boolean;
   coverUri?: string;
   status: ReadingStatus;
-  completedAt?: string;
+  startedAt?: string; // Data de início
+  completedAt?: string; // Data de término
+  location?: string; // Onde o livro fica (ex: Quarto, Estante Sala, Prateleira 2, Kindle)
   createdAt: string;
   updatedAt: string;
 }

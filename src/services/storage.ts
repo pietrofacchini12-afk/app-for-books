@@ -1,77 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BookCard, AppSettings } from '../types/book';
 
-const STORAGE_KEY = '@ficha_de_leitura_books_v2';
-const SETTINGS_KEY = '@ficha_de_leitura_settings_v2';
+const STORAGE_KEY = '@ficha_de_leitura_books_v3';
+const SETTINGS_KEY = '@ficha_de_leitura_settings_v3';
 
-export const initialBooks: BookCard[] = [
-  {
-    id: 'sample-1',
-    pageNumber: 1,
-    title: 'Orgulho e Preconceito',
-    author: 'Jane Austen',
-    isbn: '9788544001820',
-    publishYear: 1813,
-    pages: 424,
-    genre: 'Romance Clássico',
-    favoriteCharacter: 'Elizabeth Bennet & Sr. Darcy',
-    format: 'fisico',
-    rating: 5,
-    opinion: 'Melhor livro que já li',
-    review: 'Uma das obras mais brilhantes da literatura mundial. O desenvolvimento dos diálogos e a evolução do sentimento mútuo entre Elizabeth e Darcy é construído com extrema sutileza e ironia inteligente sobre a sociedade inglesa do século XIX.',
-    myOpinion: 'Releitura que aquece o coração em qualquer época do ano. As trocas de cartas e os bailes são inesquecíveis.',
-    isFavorite: true,
-    coverUri: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80',
-    status: 'lido',
-    completedAt: '2026-03-15',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'sample-2',
-    pageNumber: 2,
-    title: 'A Biblioteca da Meia-Noite',
-    author: 'Matt Haig',
-    isbn: '9786558380542',
-    publishYear: 2020,
-    pages: 308,
-    genre: 'Ficção Filosófica',
-    favoriteCharacter: 'Nora Seed & Sra. Elm',
-    format: 'digital',
-    rating: 4,
-    opinion: 'Gostei',
-    review: 'Entre a vida e a morte há uma biblioteca onde cada livro oferece a chance de experimentar outra vida que você poderia ter vivido. Um livro acolhedor sobre aceitação, perdas e esperança.',
-    myOpinion: 'Fez refletir bastante sobre escolhas e sobre não se prender a arrependimentos do passado.',
-    isFavorite: true,
-    coverUri: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80',
-    status: 'lido',
-    completedAt: '2026-06-20',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'sample-3',
-    pageNumber: 3,
-    title: 'Pequena Coreografia do Adeus',
-    author: 'Aline Bei',
-    isbn: '9788535934489',
-    publishYear: 2021,
-    pages: 288,
-    genre: 'Literatura Brasileira',
-    favoriteCharacter: 'Júlia',
-    format: 'audiolivro',
-    rating: 5,
-    opinion: 'Melhor livro que já li',
-    review: 'Aline Bei escreve com ritmo poético que parece dançar pelas páginas e doer na medida certa. Narra os passos de Júlia tentando se encontrar após o divórcio dos pais e as marcas da infância.',
-    myOpinion: 'Ouvir a narração em áudio foi uma experiência extremamente sensível e marcante.',
-    isFavorite: false,
-    coverUri: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80',
-    status: 'lido',
-    completedAt: '2026-08-04',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
+export const initialBooks: BookCard[] = [];
 
 export const defaultSettings: AppSettings = {
   darkMode: false,
@@ -88,11 +21,12 @@ export const BookStorageService = {
         const parsed: BookCard[] = JSON.parse(data);
         return parsed.sort((a, b) => (a.pageNumber || 1) - (b.pageNumber || 1));
       }
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(initialBooks));
-      return initialBooks;
+      // Sem livros de exemplo iniciais - estante limpa pronta para o usuário
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+      return [];
     } catch (e) {
       console.error('Erro ao obter livros:', e);
-      return initialBooks;
+      return [];
     }
   },
 

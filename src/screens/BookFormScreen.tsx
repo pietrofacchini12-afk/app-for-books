@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
-import { BookCard, BookFormat, BookOpinion } from '../types/book';
+import { BookCard, BookFormat, BookOpinion, ReadingStatus } from '../types/book';
 import { StarRating } from '../components/StarRating';
 import { PaperHeader } from '../components/PaperHeader';
 import { Colors, Shadows } from '../constants/theme';
@@ -40,6 +40,10 @@ export const BookFormScreen: React.FC<BookFormScreenProps> = ({
   const [genre, setGenre] = useState(initialBook?.genre || '');
   const [favoriteCharacter, setFavoriteCharacter] = useState(initialBook?.favoriteCharacter || '');
   const [format, setFormat] = useState<BookFormat>(initialBook?.format || 'fisico');
+  const [status, setStatus] = useState<ReadingStatus>(initialBook?.status || 'lido');
+  const [location, setLocation] = useState(initialBook?.location || '');
+  const [startedAt, setStartedAt] = useState(initialBook?.startedAt || '');
+  const [completedAt, setCompletedAt] = useState(initialBook?.completedAt || '');
   const [rating, setRating] = useState<number>(initialBook?.rating || 5);
   const [opinion, setOpinion] = useState<BookOpinion | undefined>(initialBook?.opinion);
   const [review, setReview] = useState(initialBook?.review || '');
@@ -57,8 +61,37 @@ export const BookFormScreen: React.FC<BookFormScreenProps> = ({
     'Queria não ter lido',
   ];
 
+  const handleWebFileSelect = () => {
+    if (Platform.OS === 'web') {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (e: any) => {
+        const file = e.target?.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const base64 = event.target?.result as string;
+            if (base64) {
+              setCoverUri(base64);
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
+      return true;
+    }
+    return false;
+  };
+
   const pickImage = async () => {
     try {
+      if (Platform.OS === 'web') {
+        handleWebFileSelect();
+        return;
+      }
+
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permissionResult.granted) {
         Alert.alert('Permissão necessária', 'É preciso permitir acesso à galeria de fotos.');
@@ -70,10 +103,16 @@ export const BookFormScreen: React.FC<BookFormScreenProps> = ({
         allowsEditing: true,
         aspect: [3, 4],
         quality: 0.8,
+        base64: true,
       });
 
       if (!result.canceled && result.assets.length > 0) {
-        setCoverUri(result.assets[0].uri);
+        const asset = result.assets[0];
+        if (asset.base64) {
+          setCoverUri(`data:image/jpeg;base64,${asset.base64}`);
+        } else {
+          setCoverUri(asset.uri);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -83,6 +122,11 @@ export const BookFormScreen: React.FC<BookFormScreenProps> = ({
 
   const takePhoto = async () => {
     try {
+      if (Platform.OS === 'web') {
+        handleWebFileSelect();
+        return;
+      }
+
       const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
       if (!permissionResult.granted) {
         Alert.alert('Permissão necessária', 'É preciso permitir acesso à câmera.');
@@ -93,10 +137,16 @@ export const BookFormScreen: React.FC<BookFormScreenProps> = ({
         allowsEditing: true,
         aspect: [3, 4],
         quality: 0.8,
+        base64: true,
       });
 
       if (!result.canceled && result.assets.length > 0) {
-        setCoverUri(result.assets[0].uri);
+        const asset = result.assets[0];
+        if (asset.base64) {
+          setCoverUri(`data:image/jpeg;base64,${asset.base64}`);
+        } else {
+          setCoverUri(asset.uri);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -157,8 +207,10 @@ export const BookFormScreen: React.FC<BookFormScreenProps> = ({
       myOpinion: myOpinion.trim() || undefined,
       isFavorite,
       coverUri,
-      status: initialBook?.status || 'lido',
-      completedAt: initialBook?.completedAt || new Date().toISOString(),
+      status,
+      location: location.trim() || undefined,
+      startedAt: startedAt.trim() || undefined,
+      completedAt: completedAt.trim() || undefined,
       createdAt: initialBook?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -270,6 +322,85 @@ export const BookFormScreen: React.FC<BookFormScreenProps> = ({
               {isFavorite ? 'Marcado como Livro Favorito ♥' : 'Marcar como favorito'}
             </Text>
           </TouchableOpacity>
+
+          {/* Status de Leitura (Começado, Terminado, etc) */}
+          <View style={styles.boxSection}>
+            <Text style={styles.boxTitle}>STATUS DA LEITURA:</Text>
+            <View style={styles.statusChipsRow}>
+              {[
+                { id: 'lendo', label: '📖 Começado (Lendo)' },
+                { id: 'lido', label: '✅ Terminado (Lido)' },
+                { id: 'quero_ler', label: '📌 Quero Ler' },
+                { id: 'abandonado', label: '⏸️ Pausado / Aband.' },
+              ].map((st) => {
+                const isSelected = status === st.id;
+                return (
+                  <TouchableOpacity
+                    key={st.id}
+                    style={[styles.statusChip, isSelected && styles.statusChipSelected]}
+                    onPress={() => setStatus(st.id as ReadingStatus)}
+                    activeOpacity={0.8}
+                  >
+                    <Ionicons
+                      name={isSelected ? 'radio-button-on' : 'radio-button-off'}
+                      size={16}
+                      color={isSelected ? Colors.primaryDark : Colors.textMuted}
+                      style={{ marginRight: 6 }}
+                    />
+                    <Text style={[styles.statusChipText, isSelected && styles.statusChipTextSelected]}>
+                      {st.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Datas de Início e Término */}
+            <View style={[styles.smallFieldsGrid, { marginTop: 10 }]}>
+              <View style={styles.smallFieldItem}>
+                <View style={styles.iconTag}>
+                  <Ionicons name="play-outline" size={14} color={Colors.textSecondary} />
+                  <Text style={styles.smallTagLabel}>COMEÇADO EM:</Text>
+                </View>
+                <TextInput
+                  style={styles.inputUnderline}
+                  value={startedAt}
+                  onChangeText={setStartedAt}
+                  placeholder="Ex: 10/05/2026"
+                  placeholderTextColor={Colors.textMuted}
+                />
+              </View>
+
+              <View style={styles.smallFieldItem}>
+                <View style={styles.iconTag}>
+                  <Ionicons name="checkmark-done-outline" size={14} color={Colors.textSecondary} />
+                  <Text style={styles.smallTagLabel}>TERMINADO EM:</Text>
+                </View>
+                <TextInput
+                  style={styles.inputUnderline}
+                  value={completedAt}
+                  onChangeText={setCompletedAt}
+                  placeholder="Ex: 24/05/2026"
+                  placeholderTextColor={Colors.textMuted}
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* Onde o livro fica (Localização física ou digital) */}
+          <View style={[styles.boxSection, { marginBottom: 16 }]}>
+            <View style={styles.iconTag}>
+              <Ionicons name="location-outline" size={16} color={Colors.primary} />
+              <Text style={styles.smallTagLabel}>ONDE O LIVRO FICA (LOCAL):</Text>
+            </View>
+            <TextInput
+              style={styles.inputUnderline}
+              value={location}
+              onChangeText={setLocation}
+              placeholder="Ex: Estante do quarto, Prateleira 2, Mesa de cabeceira, Kindle..."
+              placeholderTextColor={Colors.textMuted}
+            />
+          </View>
 
           {/* Formato do Livro */}
           <View style={styles.boxSection}>
@@ -584,6 +715,34 @@ const styles = StyleSheet.create({
   radioLabelSelected: {
     color: Colors.primaryDark,
     fontWeight: '600',
+  },
+  statusChipsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 6,
+  },
+  statusChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    backgroundColor: '#FFFDF9',
+  },
+  statusChipSelected: {
+    borderColor: Colors.primaryDark,
+    backgroundColor: Colors.primaryLight,
+  },
+  statusChipText: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+  },
+  statusChipTextSelected: {
+    color: Colors.primaryDark,
+    fontWeight: '700',
   },
   smallFieldsGrid: {
     flexDirection: 'row',

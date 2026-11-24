@@ -150,26 +150,34 @@ export const MainHomeScreen: React.FC<MainHomeScreenProps> = ({
           </View>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.shelfScroll}>
-            {books.map((b) => (
-              <TouchableOpacity
-                key={b.id}
-                style={styles.miniShelfItem}
-                onPress={() => onSelectBook(b)}
-                activeOpacity={0.8}
-              >
-                <View style={[styles.miniCoverBox, { borderColor: theme.border, backgroundColor: isDark ? '#332C2A' : '#FAF5EE' }]}>
-                  {b.coverUri ? (
-                    <Image source={{ uri: b.coverUri }} style={styles.coverImage} resizeMode="cover" />
-                  ) : (
-                    <Ionicons name="book-outline" size={20} color={theme.secondary} />
-                  )}
-                </View>
-                <Text style={[styles.miniBookTitle, { color: theme.textPrimary }]} numberOfLines={1}>
-                  {b.title}
+            {books.length === 0 ? (
+              <View style={{ paddingVertical: 14 }}>
+                <Text style={{ fontSize: 13, color: theme.textMuted, fontStyle: 'italic' }}>
+                  Nenhum livro cadastrado ainda. Clique em "Abrir meu livro de leitura" para criar sua primeira ficha!
                 </Text>
-                <Text style={[styles.miniPageTag, { color: theme.textMuted }]}>Pág. {b.pageNumber}</Text>
-              </TouchableOpacity>
-            ))}
+              </View>
+            ) : (
+              books.map((b) => (
+                <TouchableOpacity
+                  key={b.id}
+                  style={styles.miniShelfItem}
+                  onPress={() => onSelectBook(b)}
+                  activeOpacity={0.8}
+                >
+                  <View style={[styles.miniCoverBox, { borderColor: theme.border, backgroundColor: isDark ? '#332C2A' : '#FAF5EE' }]}>
+                    {b.coverUri ? (
+                      <Image source={{ uri: b.coverUri }} style={styles.coverImage} resizeMode="cover" />
+                    ) : (
+                      <Ionicons name="book-outline" size={20} color={theme.secondary} />
+                    )}
+                  </View>
+                  <Text style={[styles.miniBookTitle, { color: theme.textPrimary }]} numberOfLines={1}>
+                    {b.title}
+                  </Text>
+                  <Text style={[styles.miniPageTag, { color: theme.textMuted }]}>Pág. {b.pageNumber}</Text>
+                </TouchableOpacity>
+              ))
+            )}
           </ScrollView>
         </View>
       </ScrollView>

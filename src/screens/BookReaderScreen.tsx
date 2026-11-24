@@ -204,6 +204,28 @@ export const BookReaderScreen: React.FC<BookReaderScreenProps> = ({
 
             {/* Badges de Formato, Páginas e Gênero */}
             <View style={styles.pillsRow}>
+              {/* Status Badge */}
+              <View style={[styles.pillBadge, { backgroundColor: currentBook.status === 'lido' ? '#E8F5E9' : currentBook.status === 'lendo' ? '#FFF8E1' : theme.badgeBg }]}>
+                <Ionicons
+                  name={currentBook.status === 'lido' ? 'checkmark-circle' : currentBook.status === 'lendo' ? 'book' : 'bookmark'}
+                  size={12}
+                  color={currentBook.status === 'lido' ? '#2E7D32' : currentBook.status === 'lendo' ? '#F57F17' : theme.badgeText}
+                />
+                <Text style={[styles.pillBadgeText, { color: currentBook.status === 'lido' ? '#2E7D32' : currentBook.status === 'lendo' ? '#F57F17' : theme.badgeText }]}>
+                  {currentBook.status === 'lido' ? 'Terminado (Lido)' : currentBook.status === 'lendo' ? 'Começado (Lendo)' : currentBook.status === 'abandonado' ? 'Pausado' : 'Quero Ler'}
+                </Text>
+              </View>
+
+              {/* Localização Onde Fica */}
+              {currentBook.location ? (
+                <View style={[styles.pillBadge, { backgroundColor: '#EDE7F6' }]}>
+                  <Ionicons name="location" size={12} color="#5E35B1" />
+                  <Text style={[styles.pillBadgeText, { color: '#5E35B1' }]}>
+                    Local: {currentBook.location}
+                  </Text>
+                </View>
+              ) : null}
+
               <View style={[styles.pillBadge, { backgroundColor: theme.badgeBg }]}>
                 <Ionicons
                   name={
@@ -244,6 +266,28 @@ export const BookReaderScreen: React.FC<BookReaderScreenProps> = ({
                 </View>
               ) : null}
             </View>
+
+            {/* Datas de Leitura */}
+            {(currentBook.startedAt || currentBook.completedAt) && (
+              <View style={[styles.datesRow, { borderColor: theme.border }]}>
+                {currentBook.startedAt ? (
+                  <View style={styles.dateItem}>
+                    <Ionicons name="play-outline" size={13} color={theme.textSecondary} />
+                    <Text style={[styles.dateText, { color: theme.textSecondary }]}>
+                      Início: {currentBook.startedAt}
+                    </Text>
+                  </View>
+                ) : null}
+                {currentBook.completedAt ? (
+                  <View style={styles.dateItem}>
+                    <Ionicons name="checkmark-done-outline" size={13} color={theme.textSecondary} />
+                    <Text style={[styles.dateText, { color: theme.textSecondary }]}>
+                      Término: {currentBook.completedAt}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+            )}
 
             {/* Opinião Rápida */}
             {currentBook.opinion && (
@@ -457,6 +501,25 @@ const styles = StyleSheet.create({
   },
   fieldAuthorValue: {
     fontSize: 13,
+  },
+  datesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderRadius: 8,
+    marginVertical: 4,
+  },
+  dateItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  dateText: {
+    fontSize: 11,
+    fontWeight: '500',
   },
   pillsRow: {
     flexDirection: 'row',
